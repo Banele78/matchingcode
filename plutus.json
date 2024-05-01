@@ -1,0 +1,77 @@
+{
+  "preamble": {
+    "title": "aiken-lang/matchingcode",
+    "description": "Aiken contracts for project 'aiken-lang/matchingcode'",
+    "version": "0.0.0",
+    "plutusVersion": "v2",
+    "compiler": {
+      "name": "Aiken",
+      "version": "v1.0.24-alpha+unknown"
+    },
+    "license": "Apache-2.0"
+  },
+  "validators": [
+    {
+      "title": "match.match",
+      "datum": {
+        "title": "datum",
+        "schema": {
+          "$ref": "#/definitions/match~1Datum"
+        }
+      },
+      "redeemer": {
+        "title": "redeemer",
+        "schema": {
+          "$ref": "#/definitions/match~1Redeemer"
+        }
+      },
+      "compiledCode": "59013d010000323232323232323222232325333008323232533300b3370e900100089919192999807198009bac3002300c3003300c009375c60066018016294454ccc038cdc79bae3003300c00a375c60246026602660180162660026eb0c008c030c00cc030024dd7180318060058a5022323300100100322533301400114a026464a66602666e3c008014528899802002000980b8011bae301500123011301230123012301230123012301230120012301000114a060120026002600e0084601a601c00229309b2b19299980419b87480000044c8c94ccc034c03c00852616375c601a002600c0082c600c00664a66600e66e1d2000001132323232323253330103012002149858dd7180800098080011bae300e001300e002375c6018002600a0082c600a0064600a6ea80048c00cdd5000ab9a5573aaae7955cfaba15745",
+      "hash": "1a5b652239b8c012e50bac3d083453bfa959c068780e9e54cdca98a0"
+    }
+  ],
+  "definitions": {
+    "ByteArray": {
+      "dataType": "bytes"
+    },
+    "match/Datum": {
+      "title": "Datum",
+      "anyOf": [
+        {
+          "title": "Datum",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "owner",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "beneficary",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "password",
+              "$ref": "#/definitions/ByteArray"
+            }
+          ]
+        }
+      ]
+    },
+    "match/Redeemer": {
+      "title": "Redeemer",
+      "anyOf": [
+        {
+          "title": "Redeemer",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "msg",
+              "$ref": "#/definitions/ByteArray"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

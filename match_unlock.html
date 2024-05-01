@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .input{
+            padding: 10px;
+            
+         }
+    
+         .input input{
+           width:350px;
+           height: 20px;
+         }
+    
+         .input button{
+           width: 120px;
+           height: 30px;
+         background-color: rgb(140, 132, 170);
+         border: none;
+         font-size: 20px;
+         cursor: pointer;
+         border-radius: 5px;
+         }
+       </style>
+</head>
+<body>
+    <h1>Unlock ada </h1>
+  
+    <div class="input">
+        <input type="text" id="password" placeholder="Please enter Secrete code">
+      </div>
+    
+    <div class="input">
+      <button id="unlock">Unlock ada</button>
+    </div>
+    
+    <p id="msg"></p>
+
+    <script type="module">
+        
+        const unlockButton=document.getElementById("unlock");
+       
+        const msg=document.getElementById("msg");
+      
+        const password=document.getElementById("password");
+  
+       
+         
+      import {
+          Blockfrost,
+          C,
+          Constr,
+          Data,
+          Lucid, 
+          fromHex,
+          toHex,
+          utf8ToHex,
+          
+        }  from "https://unpkg.com/lucid-cardano@0.8.3/web/mod.js"
+        import * as cbor from "https://deno.land/x/cbor@v1.4.1/index.js";
+
+
+        const fileName = 'blockfrost.txt'; // Specify the file name here
+
+
+       const response = await fetch(fileName);
+       if (!response.ok) {
+       throw new Error('Network response was not ok');
+          }
+      const blockfrostAPI = await response.text();
+
+
+       const lucid = await Lucid.new(
+       new Blockfrost(
+      "https://cardano-preprod.blockfrost.io/api/v0", 
+       blockfrostAPI // Use the fetched data to initialize Lucid
+       ) ,
+       "Preprod"
+        );
+         
+      const api = await window.cardano.nami.enable();
+      lucid.selectWallet(api);
+
+      async function fetchValidatorData(){
+        const response =await fetch("plutus.json");
+        return await response.text();
+      }
+
+      async function readValidator(){
+        const validatorData= await fetchValidatorData();
+        const validator= JSON.parse(validatorData).validators[0];
+        return {
+            type:"PlutusV2",
+            script:toHex(cbor.encode(fromHex(validator.compiledCode))),
+        };
+      }
+
+      const validator=await readValidator();
+
+      async function unlock1(){
+        const passCode=password.value.trim();
+
+        if(!passCode){
+            msg.innerHTML="please enter password";
+            return;
+        }
+
+        const beneficiaryPublicKeyHash=lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential.hash;
+
+        const scriptAddress= lucid.utils.validatorToAddress(validator);
+
+        const scriptUtxos=await lucid.utxosAt(scriptAddress);
+
+        const Datum= Data.Object({
+            owner:Data.String,
+            beneficiary: Data.String,
+            password: Data.String,
+        });
+
+        const utxos=scriptUtxos.filter((utxo) =>{
+            let datum=Data.from(utxo.datum, Datum);
+
+            return datum.beneficiary===beneficiaryPublicKeyHash &&
+                  datum.password==utf8ToHex(passCode);
+        });
+
+        if(utxos.length===0){
+            msg.innerHTML="No redeemable utxo found";
+        }
+
+        const redeemer=Data.to(new Constr(0, [utf8ToHex(passCode)]));
+
+        try{
+            const txUnlock= await unlock(utxos, {from:validator, using:redeemer});
+
+            msg.innerHTML="Ada unlocked";
+
+            await lucid.awaitTx(txUnlock);
+
+        }catch(error){
+
+        }
+
+
+
+      }
+
+      async function unlock(utxos, {from,using}){
+
+        const tx=await lucid
+        .newTx()
+        .collectFrom(utxos, using)
+        .addSigner(await lucid.wallet.address())
+        .attachSpendingValidator(from)
+        .complete();
+
+        const signedTx=await tx
+        .sign()
+        .complete();
+
+        return signedTx.submit();
+
+
+
+      }
+
+      unlockButton.onclick=unlock1;
+
+      </script>
+    
+</body>
+</html>
