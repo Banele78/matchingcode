@@ -4,32 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <style>
-        .input{
-            padding: 10px;
-            
-         }
-    
-         .input input{
-           width:350px;
-           height: 20px;
-         }
-    
-         .input button{
-           width: 120px;
-           height: 30px;
-         background-color: rgb(140, 132, 170);
-         border: none;
-         font-size: 20px;
-         cursor: pointer;
-         border-radius: 5px;
-         }
-       </style>
+    <link rel="stylesheet" href="Style.css">
+  
 </head>
 <body>
+  <div class="head">
+    <img src="coxygen.png">
+    <h1>Unlock Ada in smart contract Demo</h1>
+</div>
+  <div class="form">
+    
     <h1>Unlock ada </h1>
-  
+    <div id="msg"></div>
     <div class="input">
+      <label>Secrete code</label>
         <input type="text" id="password" placeholder="Please enter Secrete code">
       </div>
     
@@ -37,8 +25,9 @@
       <button id="unlock">Unlock ada</button>
     </div>
     
-    <p id="msg"></p>
-
+    
+    <p >Written by: Banele Nhlapo</p>
+  </div>
     <script type="module">
         
         const unlockButton=document.getElementById("unlock");
