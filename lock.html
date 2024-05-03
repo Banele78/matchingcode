@@ -33,7 +33,6 @@
       <button id="lock">Lock ada</button>
     </div>
     
-    <a href="#" id="txHash"></a>
     
     <p id="Tokens">Written by: Banele Nhlapo</p>
   </div>
@@ -45,7 +44,6 @@
         const msg=document.getElementById("msg");
         const address=document.getElementById("address");
         const password=document.getElementById("password");
-       const  transactionId= document.getElementById("txHash")
   
        
          
@@ -97,7 +95,6 @@
 
         const api = await window.cardano.nami.enable();
       lucid.selectWallet(api);
-      
         const lovelaceInput= lockada.value.trim();
         const destinationAddress=address.value.trim();
         const password1=password.value.trim();
@@ -150,12 +147,6 @@
          const txLock= signedTx.submit();
             msg.innerHTML="ada locked";
 
-            txLock.then(result => {
-  transactionId.innerHTML=`transactionId: <br>${result}`;
-  transactionId.href=`https://preprod.cardanoscan.io/transaction/${result}`;
-}).catch(error => {
-  console.error(error);
-});
         }catch(error){
           console.error(error)
         }
